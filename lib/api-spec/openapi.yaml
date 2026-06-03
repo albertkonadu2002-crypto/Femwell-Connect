@@ -627,6 +627,52 @@ paths:
               schema:
                 $ref: "#/components/schemas/PlatformStats"
 
+  # ─── TRACKER ─────────────────────────────────────────────────────────────────
+  /tracker/entries:
+    get:
+      operationId: listCycleEntries
+      tags: [tracker]
+      summary: List all cycle entries for the current user
+      responses:
+        "200":
+          description: Cycle entries list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CycleEntry"
+    post:
+      operationId: logCycleEntry
+      tags: [tracker]
+      summary: Log a new period/cycle entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCycleEntryBody"
+      responses:
+        "201":
+          description: Cycle entry created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CycleEntry"
+
+  /tracker/current-phase:
+    get:
+      operationId: getCurrentPhase
+      tags: [tracker]
+      summary: Get current cycle phase and product recommendations
+      responses:
+        "200":
+          description: Current phase info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CyclePhase"
+
 components:
   schemas:
     HealthStatus:
@@ -1088,3 +1134,70 @@ components:
           type: integer
         satisfactionRate:
           type: number
+
+    CycleEntry:
+      type: object
+      required: [id, userId, periodStart, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        periodStart:
+          type: string
+        periodEnd:
+          type: ["string", "null"]
+        cycleLength:
+          type: ["integer", "null"]
+        symptoms:
+          type: array
+          items:
+            type: string
+        flow:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    CreateCycleEntryBody:
+      type: object
+      required: [periodStart]
+      properties:
+        periodStart:
+          type: string
+        periodEnd:
+          type: string
+        cycleLength:
+          type: integer
+        symptoms:
+          type: array
+          items:
+            type: string
+        flow:
+          type: string
+          enum: [light, medium, heavy]
+        notes:
+          type: string
+
+    CyclePhase:
+      type: object
+      required: [phase, dayOfCycle, cycleLength, phaseDescription, recommendations]
+      properties:
+        phase:
+          type: string
+          enum: [menstrual, follicular, ovulation, luteal]
+        dayOfCycle:
+          type: integer
+        cycleLength:
+          type: integer
+        phaseDescription:
+          type: string
+        tips:
+          type: array
+          items:
+            type: string
+        recommendations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"

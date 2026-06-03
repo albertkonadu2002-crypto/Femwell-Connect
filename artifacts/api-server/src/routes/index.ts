@@ -8,6 +8,7 @@ import telehealthRouter from "./telehealth";
 import blogRouter from "./blog";
 import usersRouter from "./users";
 import dashboardRouter from "./dashboard";
+import trackerRouter from "./tracker";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(telehealthRouter);
 router.use(blogRouter);
 router.use(usersRouter);
 router.use(dashboardRouter);
+router.use(trackerRouter);
 
 export default router;

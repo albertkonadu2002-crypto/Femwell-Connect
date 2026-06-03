@@ -336,6 +336,59 @@ export interface PlatformStats {
   satisfactionRate: number;
 }
 
+export interface CycleEntry {
+  id: number;
+  userId: number;
+  periodStart: string;
+  /** @nullable */
+  periodEnd?: string | null;
+  /** @nullable */
+  cycleLength?: number | null;
+  symptoms?: string[];
+  /** @nullable */
+  flow?: string | null;
+  /** @nullable */
+  notes?: string | null;
+  createdAt: string;
+}
+
+export type CreateCycleEntryBodyFlow = typeof CreateCycleEntryBodyFlow[keyof typeof CreateCycleEntryBodyFlow];
+
+
+export const CreateCycleEntryBodyFlow = {
+  light: 'light',
+  medium: 'medium',
+  heavy: 'heavy',
+} as const;
+
+export interface CreateCycleEntryBody {
+  periodStart: string;
+  periodEnd?: string;
+  cycleLength?: number;
+  symptoms?: string[];
+  flow?: CreateCycleEntryBodyFlow;
+  notes?: string;
+}
+
+export type CyclePhasePhase = typeof CyclePhasePhase[keyof typeof CyclePhasePhase];
+
+
+export const CyclePhasePhase = {
+  menstrual: 'menstrual',
+  follicular: 'follicular',
+  ovulation: 'ovulation',
+  luteal: 'luteal',
+} as const;
+
+export interface CyclePhase {
+  phase: CyclePhasePhase;
+  dayOfCycle: number;
+  cycleLength: number;
+  phaseDescription: string;
+  tips?: string[];
+  recommendations: Product[];
+}
+
 export type ListProductsParams = {
 category?: string;
 featured?: boolean;

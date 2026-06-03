@@ -4,3 +4,4 @@ export * from "./orders";
 export * from "./subscriptions";
 export * from "./telehealth";
 export * from "./blog";
+export * from "./tracker";

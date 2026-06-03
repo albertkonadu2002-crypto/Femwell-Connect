@@ -579,3 +579,58 @@ export const GetPlatformStatsResponse = zod.object({
 })
 
 
+/**
+ * @summary List all cycle entries for the current user
+ */
+export const ListCycleEntriesResponseItem = zod.object({
+  "id": zod.number(),
+  "userId": zod.number(),
+  "periodStart": zod.string(),
+  "periodEnd": zod.string().nullish(),
+  "cycleLength": zod.number().nullish(),
+  "symptoms": zod.array(zod.string()).optional(),
+  "flow": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const ListCycleEntriesResponse = zod.array(ListCycleEntriesResponseItem)
+
+
+/**
+ * @summary Log a new period/cycle entry
+ */
+export const LogCycleEntryBody = zod.object({
+  "periodStart": zod.string(),
+  "periodEnd": zod.string().optional(),
+  "cycleLength": zod.number().optional(),
+  "symptoms": zod.array(zod.string()).optional(),
+  "flow": zod.enum(['light', 'medium', 'heavy']).optional(),
+  "notes": zod.string().optional()
+})
+
+
+/**
+ * @summary Get current cycle phase and product recommendations
+ */
+export const GetCurrentPhaseResponse = zod.object({
+  "phase": zod.enum(['menstrual', 'follicular', 'ovulation', 'luteal']),
+  "dayOfCycle": zod.number(),
+  "cycleLength": zod.number(),
+  "phaseDescription": zod.string(),
+  "tips": zod.array(zod.string()).optional(),
+  "recommendations": zod.array(zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "price": zod.number(),
+  "category": zod.string(),
+  "imageUrl": zod.string(),
+  "featured": zod.boolean(),
+  "inStock": zod.boolean(),
+  "contents": zod.array(zod.string()).optional(),
+  "rating": zod.number().nullish(),
+  "reviewCount": zod.number().optional()
+}))
+})
+
+

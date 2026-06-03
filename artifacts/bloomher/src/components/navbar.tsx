@@ -20,6 +20,7 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/products", label: "Shop" },
+    { href: "/tracker", label: "Tracker" },
     { href: "/telehealth", label: "Telehealth" },
     { href: "/subscriptions", label: "Subscriptions" },
     { href: "/blog", label: "Education" },

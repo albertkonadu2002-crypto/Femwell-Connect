@@ -29,6 +29,9 @@ import type {
   BlogPostInput,
   Cart,
   CartItemInput,
+  CreateCycleEntryBody,
+  CycleEntry,
+  CyclePhase,
   DashboardSummary,
   HealthStatus,
   ListAvailableSlotsParams,
@@ -2603,6 +2606,231 @@ export function useGetPlatformStats<TData = Awaited<ReturnType<typeof getPlatfor
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetPlatformStatsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListCycleEntriesUrl = () => {
+
+
+
+
+  return `/api/tracker/entries`
+}
+
+/**
+ * @summary List all cycle entries for the current user
+ */
+export const listCycleEntries = async ( options?: RequestInit): Promise<CycleEntry[]> => {
+
+  return customFetch<CycleEntry[]>(getListCycleEntriesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCycleEntriesQueryKey = () => {
+    return [
+    `/api/tracker/entries`
+    ] as const;
+    }
+
+
+export const getListCycleEntriesQueryOptions = <TData = Awaited<ReturnType<typeof listCycleEntries>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCycleEntries>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCycleEntriesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCycleEntries>>> = ({ signal }) => listCycleEntries({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCycleEntries>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCycleEntriesQueryResult = NonNullable<Awaited<ReturnType<typeof listCycleEntries>>>
+export type ListCycleEntriesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List all cycle entries for the current user
+ */
+
+export function useListCycleEntries<TData = Awaited<ReturnType<typeof listCycleEntries>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCycleEntries>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCycleEntriesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getLogCycleEntryUrl = () => {
+
+
+
+
+  return `/api/tracker/entries`
+}
+
+/**
+ * @summary Log a new period/cycle entry
+ */
+export const logCycleEntry = async (createCycleEntryBody: CreateCycleEntryBody, options?: RequestInit): Promise<CycleEntry> => {
+
+  return customFetch<CycleEntry>(getLogCycleEntryUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createCycleEntryBody,)
+  }
+);}
+
+
+
+
+export const getLogCycleEntryMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logCycleEntry>>, TError,{data: BodyType<CreateCycleEntryBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof logCycleEntry>>, TError,{data: BodyType<CreateCycleEntryBody>}, TContext> => {
+
+const mutationKey = ['logCycleEntry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof logCycleEntry>>, {data: BodyType<CreateCycleEntryBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  logCycleEntry(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type LogCycleEntryMutationResult = NonNullable<Awaited<ReturnType<typeof logCycleEntry>>>
+    export type LogCycleEntryMutationBody = BodyType<CreateCycleEntryBody>
+    export type LogCycleEntryMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Log a new period/cycle entry
+ */
+export const useLogCycleEntry = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logCycleEntry>>, TError,{data: BodyType<CreateCycleEntryBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof logCycleEntry>>,
+        TError,
+        {data: BodyType<CreateCycleEntryBody>},
+        TContext
+      > => {
+      return useMutation(getLogCycleEntryMutationOptions(options));
+    }
+
+export const getGetCurrentPhaseUrl = () => {
+
+
+
+
+  return `/api/tracker/current-phase`
+}
+
+/**
+ * @summary Get current cycle phase and product recommendations
+ */
+export const getCurrentPhase = async ( options?: RequestInit): Promise<CyclePhase> => {
+
+  return customFetch<CyclePhase>(getGetCurrentPhaseUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCurrentPhaseQueryKey = () => {
+    return [
+    `/api/tracker/current-phase`
+    ] as const;
+    }
+
+
+export const getGetCurrentPhaseQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentPhase>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCurrentPhase>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentPhaseQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentPhase>>> = ({ signal }) => getCurrentPhase({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCurrentPhase>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCurrentPhaseQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentPhase>>>
+export type GetCurrentPhaseQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get current cycle phase and product recommendations
+ */
+
+export function useGetCurrentPhase<TData = Awaited<ReturnType<typeof getCurrentPhase>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCurrentPhase>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCurrentPhaseQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

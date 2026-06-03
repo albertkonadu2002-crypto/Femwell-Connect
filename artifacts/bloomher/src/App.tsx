@@ -17,6 +17,7 @@ import Blog from "@/pages/blog";
 import BlogPost from "@/pages/blog-post";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
+import Tracker from "@/pages/tracker";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -45,6 +46,7 @@ function Router() {
         <Route path="/blog/:id" component={BlogPost} />
         <Route path="/about" component={About} />
         <Route path="/contact" component={Contact} />
+        <Route path="/tracker" component={Tracker} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
