@@ -1,0 +1,287 @@
+Act as a senior full-stack software engineer, UI/UX designer, healthcare technology consultant, and product manager.
+
+Build a modern, responsive, production-ready website called "BloomHer Care Kit" for female students and women. The platform should provide menstrual hygiene products, reproductive health education, telehealth consultations, and subscription-based wellness services.
+
+PROJECT OVERVIEW
+
+BloomHer Care Kit is a women's health support platform that combines:
+
+* Menstrual hygiene product delivery
+* Reproductive health education
+* Telehealth consultation services
+* Subscription-based care packages
+
+TARGET USERS
+
+* Female university students
+* Young women
+* Working women
+* Women seeking convenient and confidential reproductive healthcare support
+
+BRAND VALUES
+
+* Privacy
+* Convenience
+* Accessibility
+* Empowerment
+* Health Education
+* Professionalism
+
+DESIGN REQUIREMENTS
+
+Create a premium healthcare-inspired interface using:
+
+* Soft pink
+* Purple
+* White
+* Light lavender
+* Modern typography
+* Smooth animations
+* Mobile-first design
+* WCAG accessibility standards
+
+The design should feel similar to a modern healthcare startup platform.
+
+PAGES TO CREATE
+
+1. HOME PAGE
+
+* Hero section
+* Call-to-action buttons
+* Benefits section
+* Testimonials
+* How it works
+* Featured products
+* Telehealth promotion
+* Subscription promotion
+* Footer
+
+2. PRODUCTS PAGE
+
+Display product cards with:
+
+* Images
+* Description
+* Pricing
+* Add to Cart button
+
+Products:
+
+Standard BloomHer Kit
+Contains:
+
+* Sanitary pads
+* Panty liners
+* Hand sanitizer
+* Educational leaflet
+
+Premium BloomHer Kit
+Contains:
+
+* Larger sanitary pad pack
+* Additional test strips
+* Feminine wash
+* Pain relief essentials
+* Educational booklet
+
+3. TELEHEALTH PAGE
+
+Features:
+
+* Nurse consultation booking
+* Live chat interface
+* Appointment scheduling
+* Family planning education
+* Menstrual health guidance
+* Referral request form
+
+4. SUBSCRIPTION PAGE
+
+Plans:
+
+* Monthly
+* Quarterly
+* Semester Package
+
+Features:
+
+* Automatic renewal
+* Delivery scheduling
+* Package customization
+
+5. HEALTH EDUCATION BLOG
+
+Categories:
+
+* Menstrual Hygiene
+* Reproductive Health
+* Family Planning
+* Women's Wellness
+* Student Health
+
+Include:
+
+* Search functionality
+* Article categories
+* Featured posts
+
+6. ABOUT US PAGE
+
+Include:
+
+* Mission
+* Vision
+* Team members
+* Company story
+* Impact statistics
+
+7. CONTACT PAGE
+
+Include:
+
+* Contact form
+* Email
+* Phone
+* WhatsApp integration
+* Social media links
+* FAQ section
+
+USER AUTHENTICATION
+
+Allow:
+
+* Sign Up
+* Login
+* Password Reset
+* Google Authentication
+* User Profile Management
+
+USER DASHBOARD
+
+Users can:
+
+* View orders
+* Track deliveries
+* Manage subscriptions
+* Book consultations
+* View consultation history
+* Save addresses
+* Update profile
+
+E-COMMERCE FEATURES
+
+Implement:
+
+* Shopping cart
+* Wishlist
+* Checkout system
+* Promo codes
+* Order tracking
+* Invoice generation
+* Delivery status notifications
+
+PAYMENT INTEGRATION
+
+Support:
+
+* MTN Mobile Money
+* Telecel Cash
+* AirtelTigo Money
+* Visa
+* Mastercard
+
+DATABASE STRUCTURE
+
+Create database models for:
+
+* Users
+* Products
+* Orders
+* Subscriptions
+* Telehealth Appointments
+* Blog Posts
+* Payments
+* Delivery Records
+
+ADMIN DASHBOARD
+
+Admin should be able to:
+
+* Manage products
+* Manage orders
+* Manage users
+* Manage blog content
+* Manage appointments
+* Generate reports
+* View analytics
+
+SECURITY REQUIREMENTS
+
+Implement:
+
+* JWT Authentication
+* Password hashing
+* HTTPS readiness
+* Input validation
+* Role-based access control
+* Secure payment processing
+* Data privacy compliance
+
+TECH STACK
+
+Frontend:
+
+* Next.js
+* React
+* TypeScript
+* Tailwind CSS
+
+Backend:
+
+* Node.js
+* Express.js
+
+Database:
+
+* PostgreSQL
+
+Authentication:
+
+* NextAuth
+
+Storage:
+
+* Cloudinary
+
+Deployment:
+
+* Vercel (Frontend)
+* Render/Railway (Backend)
+
+EXTRA FEATURES
+
+* AI health assistant chatbot
+* Push notifications
+* SMS order updates
+* Email notifications
+* Referral and rewards system
+* Customer reviews
+* Multi-language support
+* Dark mode
+
+OUTPUT REQUIREMENTS
+
+Generate:
+
+1. Complete project structure
+2. Database schema
+3. Frontend code
+4. Backend API code
+5. Authentication system
+6. Payment integration architecture
+7. Admin dashboard
+8. Deployment guide
+9. Environment variables setup
+10. Production-ready code with comments
+
+Ensure the platform is scalable, secure, responsive, modern, and suitable for thousands of users across universities in Ghana.

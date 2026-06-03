@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "BloomHer Care Kit"
+version = "1.0.0"
+id = "artifacts/bloomher"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21129
+
+[services.development]
+run = "pnpm --filter @workspace/bloomher run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/bloomher", "run", "build" ]
+publicDir = "artifacts/bloomher/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21129"
+BASE_PATH = "/"

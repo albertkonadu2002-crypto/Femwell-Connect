@@ -1,0 +1,26 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "cIbqeoKppI0H6ZaW-zMde"
+uri = "file://artifacts/bloomher/public/images/product-kit.png"
+type = "image"
+title = "Menstrual care kit"
+
+[[generated]]
+id = "kpMrofK4zSct4PwYpCQ5L"
+uri = "file://artifacts/bloomher/public/images/product-wellness.png"
+type = "image"
+title = "Wellness subscription box"
+
+[[generated]]
+id = "mUKw_WDhAGKrHLE2q5P5y"
+uri = "file://artifacts/bloomher/public/images/blog-student.png"
+type = "image"
+title = "Student studying healthy"
+
+[[generated]]
+id = "i2xeaWdF-sygM0_833Lsa"
+uri = "file://artifacts/bloomher/public/images/blog-nurse.png"
+type = "image"
+title = "Friendly nurse consultation"

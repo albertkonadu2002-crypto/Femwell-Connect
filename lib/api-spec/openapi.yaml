@@ -1,22 +1,39 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: BloomHer Care Kit API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: products
+    description: Product catalog operations
+  - name: cart
+    description: Shopping cart operations
+  - name: orders
+    description: Order management
+  - name: subscriptions
+    description: Subscription plans
+  - name: telehealth
+    description: Telehealth consultations
+  - name: blog
+    description: Health education blog
+  - name: users
+    description: User management
+  - name: dashboard
+    description: User dashboard summaries
+  - name: reviews
+    description: Product reviews
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +41,592 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ─── PRODUCTS ───────────────────────────────────────────────────────────────
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List all products
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: featured
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get a product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not found
+
+  /products/featured:
+    get:
+      operationId: listFeaturedProducts
+      tags: [products]
+      summary: List featured products for homepage
+      responses:
+        "200":
+          description: Featured products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  # ─── REVIEWS ────────────────────────────────────────────────────────────────
+  /products/{productId}/reviews:
+    get:
+      operationId: listProductReviews
+      tags: [reviews]
+      summary: List reviews for a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reviews list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+    post:
+      operationId: createReview
+      tags: [reviews]
+      summary: Create a product review
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "201":
+          description: Review created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+
+  # ─── CART ────────────────────────────────────────────────────────────────────
+  /cart:
+    get:
+      operationId: getCart
+      tags: [cart]
+      summary: Get current user's cart
+      responses:
+        "200":
+          description: Cart contents
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+    post:
+      operationId: addToCart
+      tags: [cart]
+      summary: Add item to cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartItemInput"
+      responses:
+        "200":
+          description: Updated cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+    delete:
+      operationId: clearCart
+      tags: [cart]
+      summary: Clear cart
+      responses:
+        "200":
+          description: Cart cleared
+
+  /cart/{itemId}:
+    delete:
+      operationId: removeCartItem
+      tags: [cart]
+      summary: Remove item from cart
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+
+  # ─── ORDERS ──────────────────────────────────────────────────────────────────
+  /orders:
+    get:
+      operationId: listOrders
+      tags: [orders]
+      summary: List user orders
+      responses:
+        "200":
+          description: Order list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Place a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order placed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Not found
+
+  # ─── SUBSCRIPTIONS ───────────────────────────────────────────────────────────
+  /subscriptions/plans:
+    get:
+      operationId: listSubscriptionPlans
+      tags: [subscriptions]
+      summary: List available subscription plans
+      responses:
+        "200":
+          description: Plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SubscriptionPlan"
+
+  /subscriptions:
+    get:
+      operationId: getUserSubscription
+      tags: [subscriptions]
+      summary: Get current user's subscription
+      responses:
+        "200":
+          description: Subscription or null
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+    post:
+      operationId: createSubscription
+      tags: [subscriptions]
+      summary: Subscribe to a plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionInput"
+      responses:
+        "201":
+          description: Subscription created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+  /subscriptions/{id}/cancel:
+    patch:
+      operationId: cancelSubscription
+      tags: [subscriptions]
+      summary: Cancel a subscription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Subscription cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+  # ─── TELEHEALTH ──────────────────────────────────────────────────────────────
+  /telehealth/appointments:
+    get:
+      operationId: listAppointments
+      tags: [telehealth]
+      summary: List user appointments
+      responses:
+        "200":
+          description: Appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Appointment"
+    post:
+      operationId: bookAppointment
+      tags: [telehealth]
+      summary: Book a telehealth appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentInput"
+      responses:
+        "201":
+          description: Appointment booked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+
+  /telehealth/appointments/{id}:
+    get:
+      operationId: getAppointment
+      tags: [telehealth]
+      summary: Get appointment details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Appointment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+
+  /telehealth/appointments/{id}/cancel:
+    patch:
+      operationId: cancelAppointment
+      tags: [telehealth]
+      summary: Cancel an appointment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cancelled appointment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+
+  /telehealth/slots:
+    get:
+      operationId: listAvailableSlots
+      tags: [telehealth]
+      summary: List available appointment slots
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Available slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimeSlot"
+
+  # ─── BLOG ────────────────────────────────────────────────────────────────────
+  /blog/posts:
+    get:
+      operationId: listBlogPosts
+      tags: [blog]
+      summary: List blog posts
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: featured
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Blog posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BlogPost"
+    post:
+      operationId: createBlogPost
+      tags: [blog]
+      summary: Create a blog post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlogPostInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+
+  /blog/posts/{id}:
+    get:
+      operationId: getBlogPost
+      tags: [blog]
+      summary: Get blog post by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Blog post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+        "404":
+          description: Not found
+
+  /blog/categories:
+    get:
+      operationId: listBlogCategories
+      tags: [blog]
+      summary: List blog categories with post counts
+      responses:
+        "200":
+          description: Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BlogCategory"
+
+  # ─── USERS ───────────────────────────────────────────────────────────────────
+  /users/register:
+    post:
+      operationId: registerUser
+      tags: [users]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegisterInput"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /users/login:
+    post:
+      operationId: loginUser
+      tags: [users]
+      summary: Log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginInput"
+      responses:
+        "200":
+          description: Auth token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /users/me:
+    get:
+      operationId: getCurrentUser
+      tags: [users]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    patch:
+      operationId: updateProfile
+      tags: [users]
+      summary: Update user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfileUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  # ─── DASHBOARD (wow endpoints) ────────────────────────────────────────────────
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get user dashboard summary stats
+      responses:
+        "200":
+          description: Summary stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      summary: Get recent activity timeline
+      responses:
+        "200":
+          description: Recent activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  /dashboard/stats:
+    get:
+      operationId: getPlatformStats
+      tags: [dashboard]
+      summary: Get platform statistics for homepage
+      responses:
+        "200":
+          description: Platform stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformStats"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +634,457 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    # ─── PRODUCT ────────────────────────────────────────────────────────────────
+    Product:
+      type: object
+      required: [id, name, description, price, category, imageUrl, featured, inStock]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: string
+        imageUrl:
+          type: string
+        featured:
+          type: boolean
+        inStock:
+          type: boolean
+        contents:
+          type: array
+          items:
+            type: string
+        rating:
+          type: ["number", "null"]
+        reviewCount:
+          type: integer
+
+    ProductInput:
+      type: object
+      required: [name, description, price, category]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: string
+        imageUrl:
+          type: string
+        featured:
+          type: boolean
+        contents:
+          type: array
+          items:
+            type: string
+
+    # ─── REVIEW ─────────────────────────────────────────────────────────────────
+    Review:
+      type: object
+      required: [id, productId, userName, rating, comment, createdAt]
+      properties:
+        id:
+          type: integer
+        productId:
+          type: integer
+        userName:
+          type: string
+        rating:
+          type: integer
+        comment:
+          type: string
+        createdAt:
+          type: string
+
+    ReviewInput:
+      type: object
+      required: [rating, comment, userName]
+      properties:
+        rating:
+          type: integer
+        comment:
+          type: string
+        userName:
+          type: string
+
+    # ─── CART ────────────────────────────────────────────────────────────────────
+    Cart:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartItem"
+        total:
+          type: number
+        promoCode:
+          type: ["string", "null"]
+        discount:
+          type: ["number", "null"]
+
+    CartItem:
+      type: object
+      required: [id, productId, productName, price, quantity, imageUrl]
+      properties:
+        id:
+          type: integer
+        productId:
+          type: integer
+        productName:
+          type: string
+        price:
+          type: number
+        quantity:
+          type: integer
+        imageUrl:
+          type: string
+
+    CartItemInput:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId:
+          type: integer
+        quantity:
+          type: integer
+
+    # ─── ORDER ───────────────────────────────────────────────────────────────────
+    Order:
+      type: object
+      required: [id, userId, items, total, status, paymentMethod, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartItem"
+        total:
+          type: number
+        status:
+          type: string
+          enum: [pending, confirmed, processing, shipped, delivered, cancelled]
+        paymentMethod:
+          type: string
+        deliveryAddress:
+          type: ["string", "null"]
+        trackingNumber:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        estimatedDelivery:
+          type: ["string", "null"]
+
+    OrderInput:
+      type: object
+      required: [paymentMethod, deliveryAddress]
+      properties:
+        paymentMethod:
+          type: string
+          enum: [mtn_momo, telecel_cash, airteltigo, visa, mastercard]
+        deliveryAddress:
+          type: string
+        promoCode:
+          type: string
+
+    # ─── SUBSCRIPTION ─────────────────────────────────────────────────────────────
+    SubscriptionPlan:
+      type: object
+      required: [id, name, description, price, interval, features]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        interval:
+          type: string
+          enum: [monthly, quarterly, semester]
+        features:
+          type: array
+          items:
+            type: string
+        popular:
+          type: boolean
+
+    Subscription:
+      type: object
+      required: [id, userId, planId, planName, status, startDate, nextDelivery]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        planId:
+          type: integer
+        planName:
+          type: string
+        status:
+          type: string
+          enum: [active, paused, cancelled]
+        startDate:
+          type: string
+        nextDelivery:
+          type: string
+        deliveryAddress:
+          type: ["string", "null"]
+
+    SubscriptionInput:
+      type: object
+      required: [planId, deliveryAddress, paymentMethod]
+      properties:
+        planId:
+          type: integer
+        deliveryAddress:
+          type: string
+        paymentMethod:
+          type: string
+
+    # ─── TELEHEALTH ──────────────────────────────────────────────────────────────
+    Appointment:
+      type: object
+      required: [id, userId, date, time, type, status, nurseName]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        date:
+          type: string
+        time:
+          type: string
+        type:
+          type: string
+          enum: [menstrual_health, family_planning, general_wellness, referral]
+        status:
+          type: string
+          enum: [scheduled, completed, cancelled, no_show]
+        nurseName:
+          type: string
+        notes:
+          type: ["string", "null"]
+        meetingLink:
+          type: ["string", "null"]
+
+    AppointmentInput:
+      type: object
+      required: [date, time, type, concern]
+      properties:
+        date:
+          type: string
+        time:
+          type: string
+        type:
+          type: string
+          enum: [menstrual_health, family_planning, general_wellness, referral]
+        concern:
+          type: string
+
+    TimeSlot:
+      type: object
+      required: [date, time, available, nurseName]
+      properties:
+        date:
+          type: string
+        time:
+          type: string
+        available:
+          type: boolean
+        nurseName:
+          type: string
+
+    # ─── BLOG ────────────────────────────────────────────────────────────────────
+    BlogPost:
+      type: object
+      required: [id, title, excerpt, content, category, author, imageUrl, publishedAt, featured]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        excerpt:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+        author:
+          type: string
+        imageUrl:
+          type: string
+        publishedAt:
+          type: string
+        featured:
+          type: boolean
+        readTime:
+          type: integer
+        tags:
+          type: array
+          items:
+            type: string
+
+    BlogPostInput:
+      type: object
+      required: [title, excerpt, content, category, author]
+      properties:
+        title:
+          type: string
+        excerpt:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+        author:
+          type: string
+        imageUrl:
+          type: string
+        featured:
+          type: boolean
+        tags:
+          type: array
+          items:
+            type: string
+
+    BlogCategory:
+      type: object
+      required: [name, slug, postCount]
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        postCount:
+          type: integer
+        description:
+          type: string
+
+    # ─── USERS ───────────────────────────────────────────────────────────────────
+    User:
+      type: object
+      required: [id, email, name, role, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+        phone:
+          type: ["string", "null"]
+        university:
+          type: ["string", "null"]
+        deliveryAddress:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    UserRegisterInput:
+      type: object
+      required: [email, password, name]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        university:
+          type: string
+
+    UserLoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    UserProfileUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        university:
+          type: string
+        deliveryAddress:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    # ─── DASHBOARD ──────────────────────────────────────────────────────────────
+    DashboardSummary:
+      type: object
+      required: [totalOrders, activeSubscription, upcomingAppointments, totalSpent]
+      properties:
+        totalOrders:
+          type: integer
+        activeSubscription:
+          type: boolean
+        upcomingAppointments:
+          type: integer
+        totalSpent:
+          type: number
+        lastOrderStatus:
+          type: ["string", "null"]
+        nextDeliveryDate:
+          type: ["string", "null"]
+
+    ActivityItem:
+      type: object
+      required: [id, type, title, description, createdAt]
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [order, appointment, subscription, delivery]
+        title:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+
+    PlatformStats:
+      type: object
+      required: [totalUsers, totalOrders, universitiesServed, satisfactionRate]
+      properties:
+        totalUsers:
+          type: integer
+        totalOrders:
+          type: integer
+        universitiesServed:
+          type: integer
+        satisfactionRate:
+          type: number
