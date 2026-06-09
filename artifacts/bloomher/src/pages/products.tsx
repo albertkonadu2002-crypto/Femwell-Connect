@@ -75,7 +75,7 @@ export default function Products() {
               <Link href={`/products/${product.id}`}>
                 <div className="relative aspect-square overflow-hidden bg-secondary/20">
                   <img 
-                    src={product.imageUrl || "/images/product-kit.png"} 
+                    src={product.imageUrl || "/images/products/product-standard.jpg"} 
                     alt={product.name}
                     className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
                   />

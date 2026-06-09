@@ -26,7 +26,16 @@ app.use(
   }),
 );
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: (origin, callback) => {
+    const allowed = (process.env.CORS_ORIGINS || "http://localhost:5173")
+      .split(",")
+      .map(s => s.trim());
+    if (!origin || allowed.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());

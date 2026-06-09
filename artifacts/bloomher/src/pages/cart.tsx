@@ -101,7 +101,7 @@ export default function Cart() {
                 transition={{ delay: i * 0.05 }}
                 className="flex gap-4 bg-card border border-border/50 rounded-xl p-4"
               >
-                <img src={item.imageUrl || "/images/product-kit.png"} alt={item.productName} className="w-20 h-20 rounded-lg object-cover bg-secondary/20 shrink-0" />
+                <img src={item.imageUrl || "/images/products/product-standard.jpg"} alt={item.productName} className="w-20 h-20 rounded-lg object-cover bg-secondary/20 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold truncate">{item.productName}</h3>
                   <p className="text-muted-foreground text-sm">Qty: {item.quantity}</p>

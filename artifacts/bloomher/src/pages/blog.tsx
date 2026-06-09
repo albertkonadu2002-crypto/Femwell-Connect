@@ -92,7 +92,7 @@ export default function Blog() {
                   >
                     <Link href={`/blog/${post.id}`}>
                       <div className="group relative rounded-2xl overflow-hidden aspect-[16/9] bg-secondary/20 shadow-md hover:shadow-xl transition-shadow">
-                        <img src={post.imageUrl || "/images/blog-nurse.png"} alt={post.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                        <img src={post.imageUrl || "/images/blog-nurse.svg"} alt={post.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6">
                           <Badge className="w-fit mb-2 bg-primary/90">{post.category}</Badge>
                           <h3 className="text-white font-serif font-bold text-xl line-clamp-2">{post.title}</h3>
@@ -118,7 +118,7 @@ export default function Blog() {
                     <Link href={`/blog/${post.id}`}>
                       <div className="group bg-card border border-border/50 rounded-2xl overflow-hidden hover:shadow-lg transition-all">
                         <div className="aspect-[16/9] overflow-hidden bg-secondary/20">
-                          <img src={post.imageUrl || "/images/blog-student.png"} alt={post.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                          <img src={post.imageUrl || "/images/blog-student.svg"} alt={post.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
                         </div>
                         <div className="p-5">
                           <Badge variant="outline" className="mb-3 text-xs">{post.category}</Badge>

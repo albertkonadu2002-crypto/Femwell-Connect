@@ -4,9 +4,9 @@ import { Heart, Shield, Sparkles, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 
 const TEAM = [
-  { name: "Miss Ramatu Akunvane ", role: " A lecturer who teaches reproductive health", bio: "OB/GYN specialist with 12 years of experience in reproductive health across Cape Coast.", img: "/images/blog-nurse.png" },
-  { name: "GROUP 8 ENTREPRENEURS", role: "CEO & Co-Founder", bio: "Student nurses of university of Cape Coast whose goal is to achieve the needs of female students on campus to  accessible menstrual care.", img: "/images/blog-student.png" },
-  { name: "Nurse Baaba", role: "Head of Telehealth", bio: "Registered nurse specializing in family planning and women's wellness consultations.", img: "/images/blog-nurse.png" },
+  { name: "Miss Ramatu Akunvane ", role: " A lecturer who teaches reproductive health", bio: "OB/GYN specialist with 12 years of experience in reproductive health across Cape Coast.", img: "/images/blog-nurse.svg" },
+  { name: "GROUP 8 ENTREPRENEURS", role: "CEO & Co-Founder", bio: "Student nurses of university of Cape Coast whose goal is to achieve the needs of female students on campus to  accessible menstrual care.", img: "/images/blog-student.svg" },
+  { name: "Nurse Baaba", role: "Head of Telehealth", bio: "Registered nurse specializing in family planning and women's wellness consultations.", img: "/images/blog-nurse.svg" },
 ];
 
 const VALUES = [

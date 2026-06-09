@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <rect width="800" height="450" fill="#eff6ff"/>
+  <circle cx="400" cy="180" r="100" fill="#93c5fd"/>
+  <circle cx="400" cy="140" r="40" fill="#3b82f6"/>
+  <rect x="360" y="180" width="80" height="60" rx="8" fill="#3b82f6"/>
+  <rect x="340" y="300" width="120" height="12" rx="6" fill="#bfdbfe"/>
+  <rect x="360" y="324" width="80" height="10" rx="5" fill="#dbeafe"/>
+  <text x="400" y="380" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#1e40af">Our Nurse Team</text>
+</svg>

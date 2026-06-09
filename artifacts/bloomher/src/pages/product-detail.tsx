@@ -85,7 +85,7 @@ export default function ProductDetail() {
       <div className="grid md:grid-cols-2 gap-12 mb-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="relative aspect-square rounded-2xl overflow-hidden bg-secondary/20 shadow-lg">
-            <img src={product.imageUrl || "/images/product-kit.png"} alt={product.name} className="object-cover w-full h-full" />
+            <img src={product.imageUrl || "/images/products/product-standard.jpg"} alt={product.name} className="object-cover w-full h-full" />
             {product.featured && <Badge className="absolute top-4 left-4">Featured</Badge>}
           </div>
         </motion.div>

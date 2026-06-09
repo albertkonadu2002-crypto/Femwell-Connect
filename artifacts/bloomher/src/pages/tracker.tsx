@@ -257,7 +257,7 @@ export default function Tracker() {
                 <Link href={`/products/${product.id}`}>
                   <div className="group bg-card border border-border/50 rounded-xl overflow-hidden hover:shadow-md transition-all">
                     <div className="aspect-[4/3] overflow-hidden bg-secondary/20">
-                      <img src={product.imageUrl || "/images/product-kit.png"} alt={product.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                      <img src={product.imageUrl || "/images/products/product-standard.jpg"} alt={product.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
                     </div>
                     <div className="p-4">
                       <p className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">{product.name}</p>

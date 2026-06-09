@@ -48,7 +48,7 @@ export default function Home() {
               className="relative rounded-2xl overflow-hidden aspect-[4/3] md:aspect-square shadow-xl"
             >
               <img 
-                src="/images/product-kit.png" 
+                src="/images/products/product-standard.jpg" 
                 alt="Femwell Connect product kit" 
                 className="object-cover w-full h-full"
               />

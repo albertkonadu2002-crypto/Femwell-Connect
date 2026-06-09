@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { setAuthTokenGetter } from "@workspace/api-client-react";
+import { setAuthTokenGetter, setBaseUrl } from "@workspace/api-client-react";
 
 interface AuthContextType {
   token: string | null;
@@ -33,6 +33,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    const apiBase = import.meta.env.VITE_API_URL;
+    if (apiBase) {
+      setBaseUrl(apiBase);
+    }
     setAuthTokenGetter(() => {
       const currentToken = localStorage.getItem("femwellconnect_token");
       return currentToken;

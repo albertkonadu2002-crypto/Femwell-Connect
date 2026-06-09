@@ -43,7 +43,7 @@ export default function BlogPost() {
         </div>
 
         <div className="aspect-[16/9] rounded-2xl overflow-hidden bg-secondary/20 mb-8 shadow-lg">
-          <img src={post.imageUrl || "/images/blog-nurse.png"} alt={post.title} className="object-cover w-full h-full" />
+          <img src={post.imageUrl || "/images/blog-nurse.svg"} alt={post.title} className="object-cover w-full h-full" />
         </div>
 
         <div className="prose prose-lg max-w-none text-foreground">
