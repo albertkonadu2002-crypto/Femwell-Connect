@@ -5,6 +5,7 @@ import { useGetCart, useRemoveCartItem, useClearCart, useCreateOrder,
   type OrderInputPaymentMethod,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash2, ShoppingBag, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
+
+const BASE = import.meta.env.VITE_API_URL || "";
 
 const PAYMENT_METHODS = [
   { value: "mtn_momo", label: "MTN Mobile Money" },
@@ -25,6 +28,7 @@ export default function Cart() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { token } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState("mtn_momo");
   const [address, setAddress] = useState("");
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -46,16 +50,41 @@ export default function Cart() {
     });
   }
 
-  function handleCheckout() {
+  async function handleCheckout() {
     if (!address) { toast({ title: "Please enter a delivery address", variant: "destructive" }); return; }
+    setIsCheckingOut(true);
+
     createOrder({ data: { paymentMethod: paymentMethod as OrderInputPaymentMethod, deliveryAddress: address } }, {
-      onSuccess: (order) => {
+      onSuccess: async (order) => {
         queryClient.invalidateQueries({ queryKey: getGetCartQueryKey() });
         queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey() });
-        toast({ title: "Order placed!", description: `Order #${order.id} confirmed. Estimated delivery: ${order.estimatedDelivery}` });
-        setLocation("/dashboard");
+
+        try {
+          const res = await fetch(`${BASE}/api/payments/initialize`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ orderId: order.id, email: "demo@femwellconnect.com" }),
+          });
+          const data = await res.json();
+
+          if (data.authorization_url) {
+            window.location.href = data.authorization_url;
+          } else {
+            toast({ title: "Payment error", description: data.error || "Could not start payment.", variant: "destructive" });
+            setIsCheckingOut(false);
+          }
+        } catch {
+          toast({ title: "Order placed", description: `Order #${order.id} created. Pay from your dashboard.`, variant: "default" });
+          setLocation("/dashboard");
+        }
       },
-      onError: () => toast({ title: "Checkout failed", description: "Please try again.", variant: "destructive" }),
+      onError: () => {
+        toast({ title: "Checkout failed", description: "Please try again.", variant: "destructive" });
+        setIsCheckingOut(false);
+      },
     });
   }
 
@@ -162,8 +191,8 @@ export default function Cart() {
               </div>
             </div>
 
-            <Button className="w-full h-11" onClick={handleCheckout} disabled={isPending} data-testid="button-checkout">
-              {isPending ? "Placing order..." : `Pay GHS ${total.toFixed(2)}`}
+            <Button className="w-full h-11" onClick={handleCheckout} disabled={isPending || isCheckingOut} data-testid="button-checkout">
+              {isCheckingOut ? "Redirecting to Paystack..." : isPending ? "Placing order..." : `Pay GHS ${total.toFixed(2)}`}
             </Button>
           </div>
         </div>

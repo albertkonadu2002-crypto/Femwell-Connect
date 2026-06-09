@@ -19,6 +19,7 @@ import BlogPost from "@/pages/blog-post";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import Tracker from "@/pages/tracker";
+import PaymentVerify from "@/pages/payment-verify";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -48,6 +49,7 @@ function Router() {
         <Route path="/about" component={About} />
         <Route path="/contact" component={Contact} />
         <Route path="/tracker" component={Tracker} />
+        <Route path="/payment/verify" component={PaymentVerify} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
