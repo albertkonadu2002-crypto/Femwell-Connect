@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useListProducts, useAddToCart } from "@workspace/api-client-react";
+import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -9,13 +10,21 @@ import { Star, ShoppingBag, Filter } from "lucide-react";
 
 export default function Products() {
   const [category, setCategory] = useState<string | undefined>();
-  const { data: products, isLoading } = useListProducts({ category });
+  const { data: productsData, isLoading } = useListProducts({ category });
+  const products = Array.isArray(productsData) ? productsData : [];
   const { mutate: addToCart, isPending: isAdding } = useAddToCart();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
 
-  const categories = ["All", "Menstrual Care", "Wellness", "Supplements", "Accessories"];
+  const categories = ["All", "Essential", "Premium", "Wellness"];
 
   const handleAddToCart = (productId: number) => {
+    if (!isAuthenticated) {
+      toast({ title: "Please log in", description: "You need an account to add items to your cart." });
+      setLocation("/login");
+      return;
+    }
     addToCart({ data: { productId, quantity: 1 } }, {
       onSuccess: () => {
         toast({ title: "Added to cart", description: "Item has been added to your care kit." });
@@ -61,7 +70,7 @@ export default function Products() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products?.map(product => (
+          {products.map(product => (
             <Card key={product.id} className="overflow-hidden group hover:shadow-lg transition-all border-border/50">
               <Link href={`/products/${product.id}`}>
                 <div className="relative aspect-square overflow-hidden bg-secondary/20">

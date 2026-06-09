@@ -1,9 +1,8 @@
 import { Router, type IRouter } from "express";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db, subscriptionsTable, subscriptionPlansTable } from "@workspace/db";
 import { CreateSubscriptionBody, CancelSubscriptionParams } from "@workspace/api-zod";
-
-const GUEST_USER_ID = 1;
+import { authMiddleware, type AuthRequest } from "../middlewares/auth";
 
 const router: IRouter = Router();
 
@@ -20,14 +19,14 @@ router.get("/subscriptions/plans", async (_req, res): Promise<void> => {
   res.json(plans);
 });
 
-router.get("/subscriptions", async (_req, res): Promise<void> => {
+router.get("/subscriptions", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
   const [sub] = await db.select().from(subscriptionsTable)
-    .where(eq(subscriptionsTable.userId, GUEST_USER_ID));
-  if (!sub) { res.json({}); return; }
+    .where(eq(subscriptionsTable.userId, req.userId!));
+  if (!sub) { res.status(200).json(null); return; }
   res.json(formatSub(sub));
 });
 
-router.post("/subscriptions", async (req, res): Promise<void> => {
+router.post("/subscriptions", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
   const parsed = CreateSubscriptionBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
 
@@ -38,7 +37,7 @@ router.post("/subscriptions", async (req, res): Promise<void> => {
   nextDelivery.setDate(nextDelivery.getDate() + 30);
 
   const [sub] = await db.insert(subscriptionsTable).values({
-    userId: GUEST_USER_ID,
+    userId: req.userId!,
     planId: parsed.data.planId,
     planName: plan.name,
     status: "active",
@@ -50,14 +49,14 @@ router.post("/subscriptions", async (req, res): Promise<void> => {
   res.status(201).json(formatSub(sub));
 });
 
-router.patch("/subscriptions/:id/cancel", async (req, res): Promise<void> => {
+router.patch("/subscriptions/:id/cancel", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const params = CancelSubscriptionParams.safeParse({ id: parseInt(raw, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid id" }); return; }
 
   const [sub] = await db.update(subscriptionsTable)
     .set({ status: "cancelled" })
-    .where(eq(subscriptionsTable.id, params.data.id))
+    .where(and(eq(subscriptionsTable.id, params.data.id), eq(subscriptionsTable.userId, req.userId!)))
     .returning();
 
   if (!sub) { res.status(404).json({ error: "Subscription not found" }); return; }

@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, real, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, real, integer, boolean, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 import { usersTable } from "./users";
@@ -25,7 +25,7 @@ export const subscriptionsTable = pgTable("subscriptions", {
   deliveryAddress: text("delivery_address"),
   paymentMethod: text("payment_method").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (t) => [index("idx_subscriptions_user_id").on(t.userId)]);
 
 export const insertSubscriptionPlanSchema = createInsertSchema(subscriptionPlansTable).omit({ id: true, createdAt: true });
 export type InsertSubscriptionPlan = z.infer<typeof insertSubscriptionPlanSchema>;

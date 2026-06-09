@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "BloomHer Care Kit"
+title = "Femwell connect"
 version = "1.0.0"
 id = "artifacts/bloomher"
 router = "path"

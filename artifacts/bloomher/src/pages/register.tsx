@@ -36,7 +36,7 @@ export default function Register() {
     register({ data: values }, {
       onSuccess: (data) => {
         setToken(data.token);
-        toast({ title: "Welcome to BloomHer!", description: "Your account has been created." });
+        toast({ title: "Welcome to Femwell Connect!", description: "Your account has been created." });
         setLocation("/dashboard");
       },
       onError: () => {
@@ -54,7 +54,7 @@ export default function Register() {
       >
         <div className="flex items-center gap-2">
           <Heart className="h-7 w-7 fill-primary-foreground/30" />
-          <span className="text-2xl font-serif font-bold">BloomHer</span>
+          <span className="text-2xl font-serif font-bold">Femwell Connect</span>
         </div>
         <div>
           <h2 className="text-3xl font-serif font-bold mb-4">Join thousands of women taking charge of their health.</h2>

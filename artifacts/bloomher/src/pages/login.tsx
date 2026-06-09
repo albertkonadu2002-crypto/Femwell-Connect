@@ -59,7 +59,7 @@ export default function Login() {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <Label htmlFor="password">Password</Label>
-                <a href="#" className="text-xs text-primary hover:underline">Forgot password?</a>
+                <a href="#" className="text-xs text-primary hover:underline" onClick={(e) => { e.preventDefault(); toast({ title: "Contact Support", description: "Please email hello@femwellconnect.com for password reset." }); }}>Forgot password?</a>
               </div>
               <Input 
                 id="password" 

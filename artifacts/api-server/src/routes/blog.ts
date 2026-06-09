@@ -1,7 +1,8 @@
 import { Router, type IRouter } from "express";
-import { eq, ilike, or } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db, blogPostsTable } from "@workspace/db";
 import { ListBlogPostsQueryParams, GetBlogPostParams, CreateBlogPostBody } from "@workspace/api-zod";
+import { authMiddleware, adminMiddleware } from "../middlewares/auth";
 
 const router: IRouter = Router();
 
@@ -9,7 +10,7 @@ function formatPost(p: typeof blogPostsTable.$inferSelect) {
   return {
     ...p,
     publishedAt: p.publishedAt.toISOString(),
-    createdAt: undefined,
+    createdAt: p.createdAt.toISOString(),
   };
 }
 
@@ -36,7 +37,7 @@ router.get("/blog/posts", async (req, res): Promise<void> => {
   res.json(posts.map(formatPost));
 });
 
-router.post("/blog/posts", async (req, res): Promise<void> => {
+router.post("/blog/posts", authMiddleware, adminMiddleware, async (req, res): Promise<void> => {
   const parsed = CreateBlogPostBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
   const [post] = await db.insert(blogPostsTable).values(parsed.data).returning();
@@ -58,6 +59,10 @@ router.get("/blog/categories", async (_req, res): Promise<void> => {
   const posts = await db.select().from(blogPostsTable);
   const categoryMap = new Map<string, number>();
 
+  posts.forEach(p => {
+    categoryMap.set(p.category, (categoryMap.get(p.category) ?? 0) + 1);
+  });
+
   const CATEGORIES = [
     { name: "Menstrual Hygiene", slug: "menstrual-hygiene", description: "Tips and education on period care" },
     { name: "Reproductive Health", slug: "reproductive-health", description: "Comprehensive reproductive health guidance" },
@@ -65,10 +70,6 @@ router.get("/blog/categories", async (_req, res): Promise<void> => {
     { name: "Women's Wellness", slug: "womens-wellness", description: "Holistic health and wellbeing for women" },
     { name: "Student Health", slug: "student-health", description: "Health tips for university students" },
   ];
-
-  posts.forEach(p => {
-    categoryMap.set(p.category, (categoryMap.get(p.category) ?? 0) + 1);
-  });
 
   const result = CATEGORIES.map(cat => ({
     name: cat.name,

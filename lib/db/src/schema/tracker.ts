@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 import { usersTable } from "./users";
@@ -13,7 +13,7 @@ export const cycleEntriesTable = pgTable("cycle_entries", {
   flow: text("flow").default("medium"),
   notes: text("notes"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (t) => [index("idx_cycle_entries_user_id").on(t.userId)]);
 
 export const insertCycleEntrySchema = createInsertSchema(cycleEntriesTable).omit({ id: true, createdAt: true });
 export type InsertCycleEntry = z.infer<typeof insertCycleEntrySchema>;

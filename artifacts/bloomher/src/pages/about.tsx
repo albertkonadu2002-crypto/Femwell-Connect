@@ -4,9 +4,9 @@ import { Heart, Shield, Sparkles, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 
 const TEAM = [
-  { name: "Dr. Akosua Boateng", role: "Chief Medical Officer", bio: "OB/GYN specialist with 12 years of experience in reproductive health across Ghana.", img: "/images/blog-nurse.png" },
-  { name: "Ama Mensah", role: "CEO & Co-Founder", bio: "Former university health officer who saw firsthand the gap in accessible menstrual care on campuses.", img: "/images/blog-student.png" },
-  { name: "Nurse Abena Asante", role: "Head of Telehealth", bio: "Registered nurse specializing in family planning and women's wellness consultations.", img: "/images/blog-nurse.png" },
+  { name: "Miss Ramatu Akunvane ", role: " A lecturer who teaches reproductive health", bio: "OB/GYN specialist with 12 years of experience in reproductive health across Cape Coast.", img: "/images/blog-nurse.png" },
+  { name: "GROUP 8 ENTREPRENEURS", role: "CEO & Co-Founder", bio: "Student nurses of university of Cape Coast whose goal is to achieve the needs of female students on campus to  accessible menstrual care.", img: "/images/blog-student.png" },
+  { name: "Nurse Baaba", role: "Head of Telehealth", bio: "Registered nurse specializing in family planning and women's wellness consultations.", img: "/images/blog-nurse.png" },
 ];
 
 const VALUES = [
@@ -30,7 +30,7 @@ export default function About() {
               Built by women, for women — across every Ghanaian campus.
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              BloomHer was born out of a simple observation: too many female students were missing classes, hiding discomfort, and making do without proper period care. We set out to change that — discreetly, professionally, and with empathy at the core.
+              Femwell Connect was born out of a simple observation: too many female students were missing classes, hiding discomfort, and making do without proper period care. We set out to change that — discreetly, professionally, and with empathy at the core.
             </p>
           </motion.div>
         </div>
@@ -41,10 +41,10 @@ export default function About() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { value: stats?.totalUsers ? `${(stats.totalUsers / 1000).toFixed(1)}K+` : "4.8K+", label: "Women Supported" },
-              { value: stats?.universitiesServed ? `${stats.universitiesServed}` : "18", label: "University Campuses" },
-              { value: stats?.totalOrders ? `${(stats.totalOrders / 1000).toFixed(0)}K+` : "12K+", label: "Kits Delivered" },
-              { value: stats?.satisfactionRate ? `${stats.satisfactionRate}%` : "98.5%", label: "Satisfaction Rate" },
+              { value: stats?.totalUsers != null ? (stats.totalUsers >= 1000 ? `${(stats.totalUsers / 1000).toFixed(1)}K+` : `${stats.totalUsers}+`) : "20+", label: "Women Supported" },
+              { value: stats?.universitiesServed ? `${stats.universitiesServed}` : "2", label: "University Campuses" },
+              { value: stats?.totalOrders != null ? (stats.totalOrders >= 1000 ? `${(stats.totalOrders / 1000).toFixed(0)}K+` : `${stats.totalOrders}+`) : "8", label: "Kits Delivered" },
+              { value: stats?.satisfactionRate ? `${stats.satisfactionRate}%` : "90%", label: "Satisfaction Rate" },
             ].map((stat, i) => (
               <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="space-y-2">
                 <p className="text-4xl font-bold text-primary">{stat.value}</p>

@@ -1,5 +1,5 @@
 import { useParams, Link } from "wouter";
-import { useGetBlogPost } from "@workspace/api-client-react";
+import { useGetBlogPost, getGetBlogPostQueryKey } from "@workspace/api-client-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Clock, User, Calendar } from "lucide-react";
@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 export default function BlogPost() {
   const { id } = useParams<{ id: string }>();
   const postId = parseInt(id ?? "0", 10);
-  const { data: post, isLoading } = useGetBlogPost(postId, { query: { enabled: !!postId } });
+  const { data: post, isLoading } = useGetBlogPost(postId, { query: { queryKey: getGetBlogPostQueryKey(postId), enabled: !!postId } });
 
   if (isLoading) {
     return (

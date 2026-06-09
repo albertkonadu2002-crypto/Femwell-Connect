@@ -9,21 +9,21 @@ export function Footer() {
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <Heart className="h-6 w-6 text-primary fill-primary/20" />
-              <span className="text-xl font-serif font-bold text-foreground">BloomHer</span>
+              <span className="text-xl font-serif font-bold text-foreground">Femwell Connect</span>
             </Link>
             <p className="text-muted-foreground text-sm mb-6">
               Empowering young women in Ghana with accessible menstrual health products, telehealth, and wellness education.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href="https://instagram.com/femwellconnect" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                 <Instagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href="https://twitter.com/femwellconnect" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                 <Twitter className="h-5 w-5" />
                 <span className="sr-only">Twitter</span>
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href="https://facebook.com/femwellconnect" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                 <Facebook className="h-5 w-5" />
                 <span className="sr-only">Facebook</span>
               </a>
@@ -60,7 +60,7 @@ export function Footer() {
         </div>
         
         <div className="border-t mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} BloomHer Care Kit. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Femwell Connect. All rights reserved.</p>
           <p>Made with care in Ghana</p>
         </div>
       </div>

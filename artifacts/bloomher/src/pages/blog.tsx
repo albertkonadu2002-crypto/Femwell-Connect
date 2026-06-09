@@ -13,16 +13,19 @@ export default function Blog() {
   const [activeCategory, setActiveCategory] = useState<string | undefined>();
   const [query, setQuery] = useState("");
 
-  const { data: posts, isLoading } = useListBlogPosts({ category: activeCategory, search: query || undefined });
-  const { data: categories } = useListBlogCategories();
+  const { data: postsData, isLoading } = useListBlogPosts({ category: activeCategory, search: query || undefined });
+  const { data: categoriesData } = useListBlogCategories();
+
+  const posts = Array.isArray(postsData) ? postsData : [];
+  const categories = Array.isArray(categoriesData) ? categoriesData : [];
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     setQuery(search);
   }
 
-  const featuredPosts = (posts ?? []).filter(p => p.featured);
-  const regularPosts = (posts ?? []).filter(p => !p.featured || activeCategory || query);
+  const featuredPosts = posts.filter(p => p.featured);
+  const regularPosts = posts.filter(p => !p.featured || activeCategory || query);
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -55,7 +58,7 @@ export default function Blog() {
         >
           All Articles
         </Button>
-        {(categories ?? []).map(cat => (
+        {categories.map(cat => (
           <Button
             key={cat.slug}
             variant={activeCategory === cat.name ? "default" : "outline"}
@@ -106,7 +109,7 @@ export default function Blog() {
             </div>
           )}
 
-          {(activeCategory || query ? posts : regularPosts.length > 0 ? regularPosts : posts ?? []).length > 0 && (
+          {(activeCategory || query ? posts : regularPosts.length > 0 ? regularPosts : posts).length > 0 && (
             <div>
               {!activeCategory && !query && regularPosts.length > 0 && <h2 className="text-xl font-semibold mb-6">More Articles</h2>}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -134,7 +137,7 @@ export default function Blog() {
             </div>
           )}
 
-          {(posts ?? []).length === 0 && (
+          {posts.length === 0 && (
             <div className="text-center py-16 text-muted-foreground">
               <p>No articles found. Try a different search or category.</p>
             </div>

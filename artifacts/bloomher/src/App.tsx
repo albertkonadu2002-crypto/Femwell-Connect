@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/lib/auth";
+import { ProtectedRoute } from "@/components/protected-route";
 import { Layout } from "@/components/layout";
 import Home from "@/pages/home";
 import Products from "@/pages/products";
@@ -39,9 +40,9 @@ function Router() {
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <Route path="/cart" component={Cart} />
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/telehealth" component={Telehealth} />
-        <Route path="/subscriptions" component={Subscriptions} />
+        <Route path="/dashboard" component={() => <ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/telehealth" component={() => <ProtectedRoute><Telehealth /></ProtectedRoute>} />
+        <Route path="/subscriptions" component={() => <ProtectedRoute><Subscriptions /></ProtectedRoute>} />
         <Route path="/blog" component={Blog} />
         <Route path="/blog/:id" component={BlogPost} />
         <Route path="/about" component={About} />

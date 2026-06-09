@@ -22,11 +22,14 @@ const STATUS_COLORS: Record<string, string> = {
 export default function Dashboard() {
   const { logout } = useAuth();
   const { data: summary, isLoading: summaryLoading } = useGetDashboardSummary();
-  const { data: activity, isLoading: activityLoading } = useGetRecentActivity();
-  const { data: orders, isLoading: ordersLoading } = useListOrders();
-  const { data: appointments, isLoading: apptsLoading } = useListAppointments();
+  const { data: activityData, isLoading: activityLoading } = useGetRecentActivity();
+  const { data: ordersData, isLoading: ordersLoading } = useListOrders();
+  const { data: appointmentsData, isLoading: apptsLoading } = useListAppointments();
   const { data: subscription } = useGetUserSubscription();
 
+  const activity = Array.isArray(activityData) ? activityData : [];
+  const orders = Array.isArray(ordersData) ? ordersData : [];
+  const appointments = Array.isArray(appointmentsData) ? appointmentsData : [];
   const activeSub = subscription && (subscription as any).id ? subscription : null;
 
   return (
@@ -66,11 +69,11 @@ export default function Dashboard() {
           </h2>
           {activityLoading ? (
             <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-16 rounded-xl" />)}</div>
-          ) : (activity ?? []).length === 0 ? (
+          ) : activity.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground text-sm bg-card border border-border/50 rounded-xl">No activity yet. Start shopping!</div>
           ) : (
             <div className="space-y-3">
-              {(activity ?? []).slice(0, 6).map(item => (
+              {activity.slice(0, 6).map(item => (
                 <div key={item.id} className="bg-card border border-border/50 rounded-xl p-4">
                   <p className="font-medium text-sm">{item.title}</p>
                   <p className="text-xs text-muted-foreground mt-1">{item.description}</p>
@@ -111,14 +114,14 @@ export default function Dashboard() {
             </h2>
             {ordersLoading ? (
               <div className="space-y-3">{[1,2].map(i => <Skeleton key={i} className="h-20 rounded-xl" />)}</div>
-            ) : (orders ?? []).length === 0 ? (
+            ) : orders.length === 0 ? (
               <div className="bg-card border border-dashed border-border rounded-xl p-6 text-center">
                 <p className="text-muted-foreground text-sm mb-3">No orders yet</p>
                 <Link href="/products"><Button size="sm">Shop now</Button></Link>
               </div>
             ) : (
               <div className="space-y-3">
-                {(orders ?? []).slice(0, 3).map(order => (
+                {orders.slice(0, 3).map(order => (
                   <div key={order.id} className="bg-card border border-border/50 rounded-xl p-4 flex items-center justify-between gap-4">
                     <div>
                       <p className="font-medium text-sm">Order #{order.id}</p>
@@ -141,14 +144,14 @@ export default function Dashboard() {
             </h2>
             {apptsLoading ? (
               <Skeleton className="h-20 rounded-xl" />
-            ) : (appointments ?? []).filter(a => a.status === "scheduled").length === 0 ? (
+            ) : appointments.filter(a => a.status === "scheduled").length === 0 ? (
               <div className="bg-card border border-dashed border-border rounded-xl p-6 text-center">
                 <p className="text-muted-foreground text-sm mb-3">No upcoming appointments</p>
                 <Link href="/telehealth"><Button size="sm">Book consultation</Button></Link>
               </div>
             ) : (
               <div className="space-y-3">
-                {(appointments ?? []).filter(a => a.status === "scheduled").slice(0, 3).map(appt => (
+                {appointments.filter(a => a.status === "scheduled").slice(0, 3).map(appt => (
                   <div key={appt.id} className="bg-card border border-border/50 rounded-xl p-4 flex items-center justify-between gap-4">
                     <div>
                       <p className="font-medium text-sm capitalize">{appt.type.replace(/_/g, " ")} with {appt.nurseName}</p>

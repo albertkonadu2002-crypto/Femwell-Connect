@@ -1,15 +1,14 @@
 import { Router, type IRouter } from "express";
-import { eq, count } from "drizzle-orm";
-import { db, ordersTable, appointmentsTable, subscriptionsTable, usersTable, blogPostsTable } from "@workspace/db";
-
-const GUEST_USER_ID = 1;
+import { eq, count, sql, avg, countDistinct } from "drizzle-orm";
+import { db, ordersTable, appointmentsTable, subscriptionsTable, usersTable, reviewsTable } from "@workspace/db";
+import { authMiddleware, type AuthRequest } from "../middlewares/auth";
 
 const router: IRouter = Router();
 
-router.get("/dashboard/summary", async (_req, res): Promise<void> => {
-  const orders = await db.select().from(ordersTable).where(eq(ordersTable.userId, GUEST_USER_ID));
-  const [sub] = await db.select().from(subscriptionsTable).where(eq(subscriptionsTable.userId, GUEST_USER_ID));
-  const appts = await db.select().from(appointmentsTable).where(eq(appointmentsTable.userId, GUEST_USER_ID));
+router.get("/dashboard/summary", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
+  const orders = await db.select().from(ordersTable).where(eq(ordersTable.userId, req.userId!));
+  const [sub] = await db.select().from(subscriptionsTable).where(eq(subscriptionsTable.userId, req.userId!));
+  const appts = await db.select().from(appointmentsTable).where(eq(appointmentsTable.userId, req.userId!));
 
   const today = new Date().toISOString().split("T")[0];
   const upcomingAppts = appts.filter(a => a.date >= today && a.status === "scheduled");
@@ -26,10 +25,10 @@ router.get("/dashboard/summary", async (_req, res): Promise<void> => {
   });
 });
 
-router.get("/dashboard/recent-activity", async (_req, res): Promise<void> => {
-  const orders = await db.select().from(ordersTable).where(eq(ordersTable.userId, GUEST_USER_ID));
-  const appts = await db.select().from(appointmentsTable).where(eq(appointmentsTable.userId, GUEST_USER_ID));
-  const subs = await db.select().from(subscriptionsTable).where(eq(subscriptionsTable.userId, GUEST_USER_ID));
+router.get("/dashboard/recent-activity", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
+  const orders = await db.select().from(ordersTable).where(eq(ordersTable.userId, req.userId!));
+  const appts = await db.select().from(appointmentsTable).where(eq(appointmentsTable.userId, req.userId!));
+  const subs = await db.select().from(subscriptionsTable).where(eq(subscriptionsTable.userId, req.userId!));
 
   const activity = [
     ...orders.map((o, i) => ({
@@ -63,11 +62,24 @@ router.get("/dashboard/stats", async (_req, res): Promise<void> => {
   const [userCount] = await db.select({ count: count(usersTable.id) }).from(usersTable);
   const [orderCount] = await db.select({ count: count(ordersTable.id) }).from(ordersTable);
 
+  const [uniCount] = await db
+    .select({ count: countDistinct(usersTable.university) })
+    .from(usersTable)
+    .where(sql`${usersTable.university} IS NOT NULL`);
+
+  const [ratingResult] = await db
+    .select({ avg: avg(reviewsTable.rating) })
+    .from(reviewsTable);
+
+  const satisfactionRate = ratingResult?.avg
+    ? Math.round(Number(ratingResult.avg) * 20 * 10) / 10
+    : 98.5;
+
   res.json({
-    totalUsers: Number(userCount?.count ?? 0) + 4820,
-    totalOrders: Number(orderCount?.count ?? 0) + 12500,
-    universitiesServed: 18,
-    satisfactionRate: 98.5,
+    totalUsers: Number(userCount?.count ?? 0),
+    totalOrders: Number(orderCount?.count ?? 0),
+    universitiesServed: Number(uniCount?.count ?? 0),
+    satisfactionRate,
   });
 });
 

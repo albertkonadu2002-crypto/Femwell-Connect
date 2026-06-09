@@ -2,8 +2,7 @@ import { Router, type IRouter } from "express";
 import { eq, and } from "drizzle-orm";
 import { db, cartItemsTable, productsTable } from "@workspace/db";
 import { AddToCartBody, RemoveCartItemParams } from "@workspace/api-zod";
-
-const GUEST_USER_ID = 1;
+import { authMiddleware, type AuthRequest } from "../middlewares/auth";
 
 const router: IRouter = Router();
 
@@ -25,13 +24,11 @@ async function buildCart(userId: number) {
   };
 }
 
-router.get("/cart", async (req, res): Promise<void> => {
-  const userId = GUEST_USER_ID;
-  res.json(await buildCart(userId));
+router.get("/cart", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
+  res.json(await buildCart(req.userId!));
 });
 
-router.post("/cart", async (req, res): Promise<void> => {
-  const userId = GUEST_USER_ID;
+router.post("/cart", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
   const parsed = AddToCartBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
 
@@ -39,7 +36,7 @@ router.post("/cart", async (req, res): Promise<void> => {
   if (!product) { res.status(404).json({ error: "Product not found" }); return; }
 
   const [existing] = await db.select().from(cartItemsTable).where(
-    and(eq(cartItemsTable.userId, userId), eq(cartItemsTable.productId, parsed.data.productId))
+    and(eq(cartItemsTable.userId, req.userId!), eq(cartItemsTable.productId, parsed.data.productId))
   );
 
   if (existing) {
@@ -48,7 +45,7 @@ router.post("/cart", async (req, res): Promise<void> => {
       .where(eq(cartItemsTable.id, existing.id));
   } else {
     await db.insert(cartItemsTable).values({
-      userId,
+      userId: req.userId!,
       productId: product.id,
       productName: product.name,
       price: product.price,
@@ -57,21 +54,24 @@ router.post("/cart", async (req, res): Promise<void> => {
     });
   }
 
-  res.json(await buildCart(userId));
+  res.json(await buildCart(req.userId!));
 });
 
-router.delete("/cart", async (_req, res): Promise<void> => {
-  const userId = GUEST_USER_ID;
-  await db.delete(cartItemsTable).where(eq(cartItemsTable.userId, userId));
+router.delete("/cart", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
+  await db.delete(cartItemsTable).where(eq(cartItemsTable.userId, req.userId!));
   res.json({ message: "Cart cleared" });
 });
 
-router.delete("/cart/:itemId", async (req, res): Promise<void> => {
+router.delete("/cart/:itemId", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
   const raw = Array.isArray(req.params.itemId) ? req.params.itemId[0] : req.params.itemId;
   const params = RemoveCartItemParams.safeParse({ itemId: parseInt(raw, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid itemId" }); return; }
+
+  const [item] = await db.select().from(cartItemsTable).where(eq(cartItemsTable.id, params.data.itemId));
+  if (!item || item.userId !== req.userId!) { res.status(404).json({ error: "Item not found" }); return; }
+
   await db.delete(cartItemsTable).where(eq(cartItemsTable.id, params.data.itemId));
-  res.json(await buildCart(GUEST_USER_ID));
+  res.json(await buildCart(req.userId!));
 });
 
 export default router;

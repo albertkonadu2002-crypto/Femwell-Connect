@@ -71,7 +71,7 @@ export default function Contact() {
             <h2 className="font-semibold text-lg mb-4">Other ways to reach us</h2>
             <div className="space-y-4">
               {[
-                { icon: Mail, label: "Email", value: "hello@bloomher.care", href: "mailto:hello@bloomher.care" },
+                { icon: Mail, label: "Email", value: "hello@femwellconnect.com", href: "mailto:hello@femwellconnect.com" },
                 { icon: Phone, label: "Phone", value: "+233 24 000 0001", href: "tel:+233240000001" },
                 { icon: MessageCircle, label: "WhatsApp", value: "+233 24 000 0001", href: "https://wa.me/233240000001" },
                 { icon: MapPin, label: "Office", value: "University of Ghana Campus, Legon, Accra", href: null },

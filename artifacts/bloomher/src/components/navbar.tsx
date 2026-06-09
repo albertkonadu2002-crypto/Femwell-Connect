@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
-import { useGetCart } from "@workspace/api-client-react";
+import { useGetCart, getGetCartQueryKey } from "@workspace/api-client-react";
 import { ShoppingBag, Menu, User, LogOut, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -16,7 +16,7 @@ import {
 export function Navbar() {
   const [location] = useLocation();
   const { isAuthenticated, logout } = useAuth();
-  const { data: cart } = useGetCart({ query: { enabled: isAuthenticated } });
+  const { data: cart } = useGetCart({ query: { queryKey: getGetCartQueryKey(), enabled: isAuthenticated } });
 
   const navLinks = [
     { href: "/products", label: "Shop" },
@@ -58,7 +58,7 @@ export function Navbar() {
           </Sheet>
           <Link href="/" className="flex items-center gap-2">
             <Heart className="h-6 w-6 text-primary fill-primary/20" />
-            <span className="text-xl font-serif font-bold text-foreground">BloomHer</span>
+            <span className="text-xl font-serif font-bold text-foreground">Femwell Connect</span>
           </Link>
           <nav className="hidden md:flex gap-6 items-center">
             {navLinks.map((link) => (

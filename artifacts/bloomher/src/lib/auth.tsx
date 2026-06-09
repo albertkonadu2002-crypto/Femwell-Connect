@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { setAuthTokenGetter } from "@workspace/api-client-react";
 
 interface AuthContextType {
@@ -11,27 +12,29 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [token, setTokenState] = useState<string | null>(() => {
-    return localStorage.getItem("bloomher_token");
+    return localStorage.getItem("femwellconnect_token");
   });
 
   const setToken = (newToken: string | null) => {
     if (newToken) {
-      localStorage.setItem("bloomher_token", newToken);
+      localStorage.setItem("femwellconnect_token", newToken);
     } else {
-      localStorage.removeItem("bloomher_token");
+      localStorage.removeItem("femwellconnect_token");
     }
     setTokenState(newToken);
   };
 
   const logout = () => {
     setToken(null);
+    queryClient.clear();
     window.location.href = "/";
   };
 
   useEffect(() => {
     setAuthTokenGetter(() => {
-      const currentToken = localStorage.getItem("bloomher_token");
+      const currentToken = localStorage.getItem("femwellconnect_token");
       return currentToken;
     });
   }, []);

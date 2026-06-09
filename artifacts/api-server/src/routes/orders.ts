@@ -2,8 +2,7 @@ import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
 import { db, ordersTable, cartItemsTable } from "@workspace/db";
 import { CreateOrderBody, GetOrderParams } from "@workspace/api-zod";
-
-const GUEST_USER_ID = 1;
+import { authMiddleware, type AuthRequest } from "../middlewares/auth";
 
 const router: IRouter = Router();
 
@@ -18,16 +17,16 @@ function formatOrder(order: typeof ordersTable.$inferSelect) {
   };
 }
 
-router.get("/orders", async (_req, res): Promise<void> => {
-  const orders = await db.select().from(ordersTable).where(eq(ordersTable.userId, GUEST_USER_ID));
+router.get("/orders", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
+  const orders = await db.select().from(ordersTable).where(eq(ordersTable.userId, req.userId!));
   res.json(orders.map(formatOrder));
 });
 
-router.post("/orders", async (req, res): Promise<void> => {
+router.post("/orders", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
   const parsed = CreateOrderBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
 
-  const cartItems = await db.select().from(cartItemsTable).where(eq(cartItemsTable.userId, GUEST_USER_ID));
+  const cartItems = await db.select().from(cartItemsTable).where(eq(cartItemsTable.userId, req.userId!));
   if (cartItems.length === 0) { res.status(400).json({ error: "Cart is empty" }); return; }
 
   const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -35,7 +34,7 @@ router.post("/orders", async (req, res): Promise<void> => {
   deliveryDate.setDate(deliveryDate.getDate() + 5);
 
   const [order] = await db.insert(ordersTable).values({
-    userId: GUEST_USER_ID,
+    userId: req.userId!,
     items: cartItems.map(i => ({
       id: i.id,
       productId: i.productId,
@@ -52,18 +51,17 @@ router.post("/orders", async (req, res): Promise<void> => {
     trackingNumber: `BHK${Date.now()}`,
   }).returning();
 
-  await db.delete(cartItemsTable).where(eq(cartItemsTable.userId, GUEST_USER_ID));
-
+  await db.delete(cartItemsTable).where(eq(cartItemsTable.userId, req.userId!));
   res.status(201).json(formatOrder(order));
 });
 
-router.get("/orders/:id", async (req, res): Promise<void> => {
+router.get("/orders/:id", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const params = GetOrderParams.safeParse({ id: parseInt(raw, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid id" }); return; }
 
   const [order] = await db.select().from(ordersTable).where(eq(ordersTable.id, params.data.id));
-  if (!order) { res.status(404).json({ error: "Order not found" }); return; }
+  if (!order || order.userId !== req.userId!) { res.status(404).json({ error: "Order not found" }); return; }
 
   res.json(formatOrder(order));
 });

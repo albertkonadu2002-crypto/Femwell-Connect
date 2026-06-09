@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import {
-  useGetCart, useRemoveCartItem, useClearCart, useCreateOrder,
-  getGetCartQueryKey, getListOrdersQueryKey
+import { useGetCart, useRemoveCartItem, useClearCart, useCreateOrder,
+  getGetCartQueryKey, getListOrdersQueryKey,
+  type OrderInputPaymentMethod,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -48,7 +48,7 @@ export default function Cart() {
 
   function handleCheckout() {
     if (!address) { toast({ title: "Please enter a delivery address", variant: "destructive" }); return; }
-    createOrder({ data: { paymentMethod, deliveryAddress: address } }, {
+    createOrder({ data: { paymentMethod: paymentMethod as OrderInputPaymentMethod, deliveryAddress: address } }, {
       onSuccess: (order) => {
         queryClient.invalidateQueries({ queryKey: getGetCartQueryKey() });
         queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey() });

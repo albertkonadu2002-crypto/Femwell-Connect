@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useListAvailableSlots, useBookAppointment, useListAppointments, getListAppointmentsQueryKey } from "@workspace/api-client-react";
+import { useListAvailableSlots, useBookAppointment, useListAppointments, getListAppointmentsQueryKey, type AppointmentInputType } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -27,20 +27,22 @@ export default function Telehealth() {
   const [consultType, setConsultType] = useState("menstrual_health");
   const [concern, setConcern] = useState("");
 
-  const { data: slots, isLoading: slotsLoading } = useListAvailableSlots(
+  const { data: slotsData, isLoading: slotsLoading } = useListAvailableSlots(
     selectedDate ? { date: selectedDate } : {},
   );
-  const { data: appointments, isLoading: apptsLoading } = useListAppointments();
+  const { data: appointmentsData, isLoading: apptsLoading } = useListAppointments();
   const { mutate: bookAppointment, isPending: isBooking } = useBookAppointment();
 
-  const availableDates = [...new Set((slots ?? []).map(s => s.date))];
+  const slots = Array.isArray(slotsData) ? slotsData : [];
+  const appointments = Array.isArray(appointmentsData) ? appointmentsData : [];
+  const availableDates = [...new Set(slots.map(s => s.date))];
 
   function handleBook() {
     if (!selectedSlot) { toast({ title: "Please select a time slot", variant: "destructive" }); return; }
     if (!concern) { toast({ title: "Please describe your concern", variant: "destructive" }); return; }
 
     bookAppointment({
-      data: { date: selectedSlot.date, time: selectedSlot.time, type: consultType, concern }
+      data: { date: selectedSlot.date, time: selectedSlot.time, type: consultType as AppointmentInputType, concern }
     }, {
       onSuccess: (appt) => {
         queryClient.invalidateQueries({ queryKey: getListAppointmentsQueryKey() });
@@ -51,8 +53,8 @@ export default function Telehealth() {
     });
   }
 
-  const upcomingAppts = (appointments ?? []).filter(a => a.status === "scheduled");
-  const pastAppts = (appointments ?? []).filter(a => a.status !== "scheduled");
+  const upcomingAppts = appointments.filter(a => a.status === "scheduled");
+  const pastAppts = appointments.filter(a => a.status !== "scheduled");
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -152,7 +154,7 @@ export default function Telehealth() {
                 <div>
                   <h2 className="font-semibold text-lg mb-4">4. Choose a time</h2>
                   <div className="grid grid-cols-2 gap-2">
-                    {(slots ?? []).filter(s => s.date === selectedDate && s.available).map(slot => (
+                    {slots.filter(s => s.date === selectedDate && s.available).map(slot => (
                       <button
                         key={`${slot.date}-${slot.time}`}
                         onClick={() => setSelectedSlot(slot)}

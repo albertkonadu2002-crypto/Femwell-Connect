@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { useParams, Link } from "wouter";
-import { useGetProduct, useListProductReviews, useCreateReview, useAddToCart, getGetCartQueryKey } from "@workspace/api-client-react";
+import { useParams, Link, useLocation } from "wouter";
+import { useGetProduct, useListProductReviews, useCreateReview, useAddToCart, getGetCartQueryKey, getGetProductQueryKey, getListProductReviewsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,17 +27,24 @@ export default function ProductDetail() {
   const productId = parseInt(id ?? "0", 10);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
 
   const [reviewName, setReviewName] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
 
-  const { data: product, isLoading } = useGetProduct(productId, { query: { enabled: !!productId } });
-  const { data: reviews } = useListProductReviews(productId, { query: { enabled: !!productId } });
+  const { data: product, isLoading } = useGetProduct(productId, { query: { queryKey: getGetProductQueryKey(productId), enabled: !!productId } });
+  const { data: reviews } = useListProductReviews(productId, { query: { queryKey: getListProductReviewsQueryKey(productId), enabled: !!productId } });
   const { mutate: addToCart, isPending: isAdding } = useAddToCart();
   const { mutate: createReview, isPending: isReviewing } = useCreateReview();
 
   function handleAddToCart() {
+    if (!isAuthenticated) {
+      toast({ title: "Please log in", description: "You need an account to add items to your cart." });
+      setLocation("/login");
+      return;
+    }
     addToCart({ data: { productId, quantity: 1 } }, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getGetCartQueryKey() });

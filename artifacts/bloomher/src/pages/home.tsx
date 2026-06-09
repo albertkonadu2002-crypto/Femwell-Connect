@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 export default function Home() {
   const { data: stats } = useGetPlatformStats();
   const { data: featuredProducts } = useListFeaturedProducts();
+  const products = Array.isArray(featuredProducts) ? featuredProducts : [];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -24,7 +25,7 @@ export default function Home() {
                 Your body. Your health. <span className="text-primary italic">Your terms.</span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground mb-8">
-                BloomHer is your trusted digital companion for menstrual health, wellness subscriptions, and professional telehealth consultations in Ghana.
+                Femwell Connect is your trusted digital companion for menstrual health, wellness subscriptions, and professional telehealth consultations in Ghana.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/products">
@@ -48,7 +49,7 @@ export default function Home() {
             >
               <img 
                 src="/images/product-kit.png" 
-                alt="BloomHer Care Kit" 
+                alt="Femwell Connect product kit" 
                 className="object-cover w-full h-full"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-end p-6">
@@ -69,19 +70,19 @@ export default function Home() {
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div className="space-y-2">
-              <h3 className="text-3xl md:text-4xl font-bold text-primary">{stats?.totalUsers || "1,000+"}</h3>
+              <h3 className="text-3xl md:text-4xl font-bold text-primary">{stats?.totalUsers || "20+"}</h3>
               <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Women Supported</p>
             </div>
             <div className="space-y-2">
-              <h3 className="text-3xl md:text-4xl font-bold text-primary">{stats?.universitiesServed || "12+"}</h3>
+              <h3 className="text-3xl md:text-4xl font-bold text-primary">{stats?.universitiesServed || "2"}</h3>
               <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Campuses</p>
             </div>
             <div className="space-y-2">
-              <h3 className="text-3xl md:text-4xl font-bold text-primary">{stats?.totalOrders || "5,000+"}</h3>
+              <h3 className="text-3xl md:text-4xl font-bold text-primary">{stats?.totalOrders || "8"}</h3>
               <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Kits Delivered</p>
             </div>
             <div className="space-y-2">
-              <h3 className="text-3xl md:text-4xl font-bold text-primary">{stats?.satisfactionRate ? `${stats.satisfactionRate}%` : "98%"}</h3>
+              <h3 className="text-3xl md:text-4xl font-bold text-primary">{stats?.satisfactionRate ? `${stats.satisfactionRate}%` : "90%"}</h3>
               <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Satisfaction</p>
             </div>
           </div>
@@ -92,7 +93,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
             <h2 className="text-3xl text-center">Featured Products</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
-                {featuredProducts?.map(p => (
+                {products.map(p => (
                     <div key={p.id} className="p-4 border rounded-xl shadow-sm">
                         <img src={p.imageUrl} alt={p.name} className="w-full aspect-square object-cover rounded-lg" />
                         <h3 className="font-semibold text-lg mt-4">{p.name}</h3>

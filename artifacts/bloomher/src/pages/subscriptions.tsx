@@ -25,10 +25,12 @@ export default function Subscriptions() {
   const [address, setAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("mtn_momo");
 
-  const { data: plans, isLoading: plansLoading } = useListSubscriptionPlans();
+  const { data: plansData, isLoading: plansLoading } = useListSubscriptionPlans();
   const { data: subscription } = useGetUserSubscription();
   const { mutate: subscribe, isPending: isSubscribing } = useCreateSubscription();
   const { mutate: cancel, isPending: isCancelling } = useCancelSubscription();
+
+  const plans = Array.isArray(plansData) ? plansData : [];
 
   function handleSubscribe() {
     if (!selectedPlanId) { toast({ title: "Please select a plan", variant: "destructive" }); return; }
@@ -59,7 +61,7 @@ export default function Subscriptions() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
         <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Subscription Plans</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Get your BloomHer Care Kit delivered automatically. Never run out, never worry.
+          Get your Femwell Connect kit delivered automatically. Never run out, never worry.
         </p>
       </motion.div>
 
@@ -82,7 +84,7 @@ export default function Subscriptions() {
         </div>
       ) : (
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          {(plans ?? []).map((plan, i) => (
+            {plans.map((plan, i) => (
             <motion.div
               key={plan.id}
               initial={{ opacity: 0, y: 30 }}

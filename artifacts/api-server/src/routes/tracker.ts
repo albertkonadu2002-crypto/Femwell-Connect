@@ -1,8 +1,7 @@
 import { Router, type IRouter } from "express";
 import { eq, desc } from "drizzle-orm";
 import { db, cycleEntriesTable, productsTable } from "@workspace/db";
-
-const GUEST_USER_ID = 1;
+import { authMiddleware, type AuthRequest } from "../middlewares/auth";
 
 const router: IRouter = Router();
 
@@ -75,16 +74,16 @@ function formatEntry(e: typeof cycleEntriesTable.$inferSelect) {
   return { ...e, createdAt: e.createdAt.toISOString() };
 }
 
-router.get("/tracker/entries", async (_req, res): Promise<void> => {
+router.get("/tracker/entries", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
   const entries = await db
     .select()
     .from(cycleEntriesTable)
-    .where(eq(cycleEntriesTable.userId, GUEST_USER_ID))
+    .where(eq(cycleEntriesTable.userId, req.userId!))
     .orderBy(desc(cycleEntriesTable.periodStart));
   res.json(entries.map(formatEntry));
 });
 
-router.post("/tracker/entries", async (req, res): Promise<void> => {
+router.post("/tracker/entries", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
   const body = req.body as {
     periodStart?: string;
     periodEnd?: string;
@@ -100,7 +99,7 @@ router.post("/tracker/entries", async (req, res): Promise<void> => {
   }
 
   const [entry] = await db.insert(cycleEntriesTable).values({
-    userId: GUEST_USER_ID,
+    userId: req.userId!,
     periodStart: body.periodStart,
     periodEnd: body.periodEnd ?? undefined,
     cycleLength: typeof body.cycleLength === "number" ? body.cycleLength : 28,
@@ -112,11 +111,11 @@ router.post("/tracker/entries", async (req, res): Promise<void> => {
   res.status(201).json(formatEntry(entry));
 });
 
-router.get("/tracker/current-phase", async (_req, res): Promise<void> => {
+router.get("/tracker/current-phase", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
   const [latestEntry] = await db
     .select()
     .from(cycleEntriesTable)
-    .where(eq(cycleEntriesTable.userId, GUEST_USER_ID))
+    .where(eq(cycleEntriesTable.userId, req.userId!))
     .orderBy(desc(cycleEntriesTable.periodStart))
     .limit(1);
 

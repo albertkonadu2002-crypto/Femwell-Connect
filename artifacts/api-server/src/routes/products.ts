@@ -9,6 +9,7 @@ import {
   CreateReviewParams,
   CreateReviewBody,
 } from "@workspace/api-zod";
+import { authMiddleware, adminMiddleware, type AuthRequest } from "../middlewares/auth";
 
 const router: IRouter = Router();
 
@@ -75,7 +76,7 @@ router.get("/products/:id", async (req, res): Promise<void> => {
   });
 });
 
-router.post("/products", async (req, res): Promise<void> => {
+router.post("/products", authMiddleware, adminMiddleware, async (req, res): Promise<void> => {
   const parsed = CreateProductBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
   const [product] = await db.insert(productsTable).values(parsed.data).returning();
@@ -90,7 +91,7 @@ router.get("/products/:productId/reviews", async (req, res): Promise<void> => {
   res.json(reviews.map(r => ({ ...r, createdAt: r.createdAt.toISOString() })));
 });
 
-router.post("/products/:productId/reviews", async (req, res): Promise<void> => {
+router.post("/products/:productId/reviews", authMiddleware, async (req: AuthRequest, res): Promise<void> => {
   const rawId = Array.isArray(req.params.productId) ? req.params.productId[0] : req.params.productId;
   const params = CreateReviewParams.safeParse({ productId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid productId" }); return; }

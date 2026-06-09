@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -7,25 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckCircle, Droplets, Calendar, ShoppingBag, ChevronDown, ChevronUp, Heart } from "lucide-react";
+import { CheckCircle, Droplets, Calendar, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
-
-async function fetchJson(path: string) {
-  const res = await fetch(`${BASE}/api${path}`);
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
-}
-async function postJson(path: string, body: unknown) {
-  const res = await fetch(`${BASE}/api${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
-}
+import {
+  useGetCurrentPhase,
+  useListCycleEntries,
+  useLogCycleEntry,
+  getGetCurrentPhaseQueryKey,
+  getListCycleEntriesQueryKey,
+} from "@workspace/api-client-react";
 
 const PHASE_META: Record<string, { color: string; bg: string; emoji: string; label: string }> = {
   menstrual: { color: "text-rose-600", bg: "bg-rose-50 border-rose-200", emoji: "🌸", label: "Menstrual Phase" },
@@ -59,34 +49,20 @@ export default function Tracker() {
     notes: "",
   });
 
-  const { data: phase, isLoading: phaseLoading } = useQuery({
-    queryKey: ["tracker", "current-phase"],
-    queryFn: () => fetchJson("/tracker/current-phase"),
-    retry: 1,
-  });
-
-  const { data: entries, isLoading: entriesLoading } = useQuery({
-    queryKey: ["tracker", "entries"],
-    queryFn: () => fetchJson("/tracker/entries"),
-    retry: 1,
-  });
-
-  const { mutate: logEntry, isPending: isLogging } = useMutation({
-    mutationFn: (data: typeof form) => postJson("/tracker/entries", {
-      periodStart: data.periodStart,
-      periodEnd: data.periodEnd || undefined,
-      cycleLength: data.cycleLength,
-      flow: data.flow,
-      symptoms: data.symptoms,
-      notes: data.notes || undefined,
-    }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tracker"] });
-      toast({ title: "Period logged!", description: "Your cycle data has been saved." });
-      setShowLogForm(false);
-      setForm(f => ({ ...f, periodEnd: "", symptoms: [], notes: "" }));
+  const { data: phase, isLoading: phaseLoading } = useGetCurrentPhase();
+  const { data: entriesRaw, isLoading: entriesLoading } = useListCycleEntries();
+  const entries = Array.isArray(entriesRaw) ? entriesRaw : [];
+  const { mutate: logEntry, isPending: isLogging } = useLogCycleEntry({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getGetCurrentPhaseQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getListCycleEntriesQueryKey() });
+        toast({ title: "Period logged!", description: "Your cycle data has been saved." });
+        setShowLogForm(false);
+        setForm(f => ({ ...f, periodEnd: "", symptoms: [], notes: "" }));
+      },
+      onError: () => toast({ title: "Failed to log", description: "Please try again.", variant: "destructive" }),
     },
-    onError: () => toast({ title: "Failed to log", description: "Please try again.", variant: "destructive" }),
   });
 
   function toggleSymptom(s: string) {
@@ -98,7 +74,7 @@ export default function Tracker() {
 
   const currentPhase = phase?.phase;
   const meta = currentPhase ? PHASE_META[currentPhase] : null;
-  const hasEntries = (entries ?? []).length > 0;
+  const hasEntries = entries.length > 0;
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -184,7 +160,14 @@ export default function Tracker() {
                     <p className="text-sm font-medium mb-1.5">Notes <span className="text-muted-foreground">(optional)</span></p>
                     <Textarea placeholder="Anything to note about this cycle..." value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={3} data-testid="input-notes" />
                   </div>
-                  <Button className="w-full" onClick={() => logEntry(form)} disabled={isLogging} data-testid="button-save-entry">
+                  <Button className="w-full" onClick={() => logEntry({ data: {
+                    periodStart: form.periodStart,
+                    periodEnd: form.periodEnd || undefined,
+                    cycleLength: form.cycleLength,
+                    flow: form.flow,
+                    symptoms: form.symptoms,
+                    notes: form.notes || undefined,
+                  }})} disabled={isLogging} data-testid="button-save-entry">
                     {isLogging ? "Saving..." : "Save entry"}
                   </Button>
                 </div>
@@ -302,7 +285,7 @@ export default function Tracker() {
           </div>
         ) : (
           <div className="space-y-3">
-            {(entries ?? []).map((entry: any, i: number) => {
+            {entries.map((entry: any, i: number) => {
               const duration = entry.periodEnd
                 ? Math.ceil((new Date(entry.periodEnd).getTime() - new Date(entry.periodStart).getTime()) / (1000 * 60 * 60 * 24))
                 : null;
@@ -343,7 +326,7 @@ export default function Tracker() {
       <div className="mt-12 bg-primary/5 border border-primary/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <h3 className="font-semibold mb-1">Have questions about your cycle?</h3>
-          <p className="text-sm text-muted-foreground">Book a private consultation with a BloomHer nurse — no judgment, just care.</p>
+          <p className="text-sm text-muted-foreground">Book a private consultation with a Femwell Connect nurse — no judgment, just care.</p>
         </div>
         <Link href="/telehealth">
           <Button className="shrink-0">Book consultation</Button>
