@@ -1,0 +1,6 @@
+{
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "artifacts/bloomher/dist/public",
+  "installCommand": "pnpm install",
+  "framework": null
+}

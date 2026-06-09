@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "pnpm --filter @workspace/bloomher run dev",
     "dev:api": "pnpm --filter @workspace/api-server run dev",
-    "build": "pnpm run typecheck && pnpm -r --filter '!@workspace/mockup-sandbox' --if-present run build",
+    "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },
