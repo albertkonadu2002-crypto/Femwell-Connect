@@ -20,6 +20,7 @@ import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import Tracker from "@/pages/tracker";
 import PaymentVerify from "@/pages/payment-verify";
+import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -50,6 +51,7 @@ function Router() {
         <Route path="/contact" component={Contact} />
         <Route path="/tracker" component={Tracker} />
         <Route path="/payment/verify" component={PaymentVerify} />
+        <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
