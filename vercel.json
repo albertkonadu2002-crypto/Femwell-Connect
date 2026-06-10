@@ -2,5 +2,8 @@
   "buildCommand": "pnpm run build",
   "outputDirectory": "artifacts/bloomher/dist/public",
   "installCommand": "pnpm install",
-  "framework": null
+  "framework": null,
+  "rewrites": [
+    { "source": "/((?!assets/).*)", "destination": "/index.html" }
+  ]
 }
