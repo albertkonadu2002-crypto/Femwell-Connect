@@ -2,10 +2,20 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { useQueryClient } from "@tanstack/react-query";
 import { setAuthTokenGetter, setBaseUrl } from "@workspace/api-client-react";
 
+function decodeRole(token: string): string | null {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.role ?? null;
+  } catch {
+    return null;
+  }
+}
+
 interface AuthContextType {
   token: string | null;
   setToken: (token: string | null) => void;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   logout: () => void;
 }
 
@@ -49,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         token,
         setToken,
         isAuthenticated: !!token,
+        isAdmin: token ? decodeRole(token) === "admin" : false,
         logout,
       }}
     >
